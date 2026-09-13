@@ -57,7 +57,7 @@ export default function RecipeDetail() {
           <h1>{recipe.title}</h1>
         </div>
         <Link to="/dashboard" className="secondary-link">
-          Volver al dashboard
+          ← Volver a mis recetas
         </Link>
       </div>
 
@@ -71,7 +71,7 @@ export default function RecipeDetail() {
         <div>
           <h2>Detalles</h2>
           <ul>
-            <li>Dificultad: {recipe.difficulty}</li>
+            <li>Dificultad: {{ easy: 'Fácil', medium: 'Media', hard: 'Difícil' }[recipe.difficulty]}</li>
             <li>Preparación: {recipe.preparation_time} min</li>
             <li>Cocción: {recipe.cooking_time} min</li>
             <li>Porciones: {recipe.servings}</li>

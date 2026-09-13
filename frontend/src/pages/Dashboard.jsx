@@ -122,20 +122,22 @@ export default function Dashboard() {
   return (
     <div className="dashboard-page">
       <header className="topbar">
-        <div>
-          <p className="eyebrow">Catálogo de Recetas</p>
-          <h1>Mis recetas</h1>
-        </div>
+        <a className="brand" href="/dashboard"><span className="brand-mark" aria-hidden="true">✳</span> Catálogo de Recetas</a>
         <button type="button" className="secondary" onClick={handleLogout}>
           Cerrar sesión
         </button>
       </header>
 
-      {message && <p className="success-message">{message}</p>}
-      {error && <p className="form-error">{error}</p>}
+      <section className="catalog-hero">
+        <div><p className="eyebrow">TU RECETARIO PERSONAL</p><h1>Mis recetas<span>Un poco de inspiración.<br /><em>Mucho sabor.</em></span></h1><p>Guarda, organiza y vuelve a preparar tus mejores ideas.</p></div>
+        <div className="collection-note"><span aria-hidden="true">✳</span><strong>{loading ? '…' : recipes.length}</strong><p>recetas en tu colección</p><a href="#recipe-editor" className="secondary-link" onClick={() => { document.getElementById('recipe-editor').open = true; }}>+ Nueva receta</a></div>
+      </section>
 
-      <section className="panel">
-        <h2>{editingRecipe ? 'Editar receta' : 'Nueva receta'}</h2>
+      {message && <p className="success-message" role="status">{message}</p>}
+      {error && <p className="form-error" role="alert">{error}</p>}
+
+      <details className="panel editor-panel" id="recipe-editor" open={Boolean(editingRecipe)}>
+        <summary>{editingRecipe ? 'Editar receta' : 'Nueva receta'}<span>Ingredientes, pasos y ese toque especial</span></summary>
         <RecipeForm
           key={`${editingRecipe?.id ?? 'new'}-${formVersion}`}
           initialRecipe={editingRecipe}
@@ -144,10 +146,10 @@ export default function Dashboard() {
           onCancel={() => setEditingRecipe(null)}
           isEditing={Boolean(editingRecipe)}
         />
-      </section>
+      </details>
 
-      <section className="panel">
-        <h2>Recetas</h2>
+      <section className="panel collection-panel">
+        <div className="section-heading"><div><p className="eyebrow">GUARDADAS POR TI</p><h2>Tu colección</h2></div><span className="result-count">{filteredRecipes.length} recetas</span></div>
         <SearchFilters
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -159,9 +161,9 @@ export default function Dashboard() {
         />
 
         {loading ? (
-          <p>Cargando recetas...</p>
+          <p className="empty-state" role="status">Cargando recetas...</p>
         ) : filteredRecipes.length === 0 ? (
-          <p>No hay recetas disponibles.</p>
+          <div className="empty-state"><span aria-hidden="true">✳</span><h3>{recipes.length ? 'No encontramos esa combinación' : 'Tu próxima receta empieza aquí'}</h3><p>{recipes.length ? 'Prueba otro título o cambia los filtros.' : 'Abre Nueva receta y guarda tu primer plato.'}</p></div>
         ) : (
           <div className="recipe-list">
             {filteredRecipes.map((recipe) => (
@@ -169,7 +171,7 @@ export default function Dashboard() {
                 key={recipe.id}
                 recipe={recipe}
                 onDelete={handleDelete}
-                onEdit={setEditingRecipe}
+                onEdit={(recipe) => { setEditingRecipe(recipe); document.getElementById('recipe-editor').scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
                 onView={(id) => navigate(`/recipes/${id}`)}
               />
             ))}

@@ -15,6 +15,7 @@ test('registro, CRUD persistente, aislamiento y cierre de sesión con API real',
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Contraseña').fill('password123');
   await page.getByRole('button', { name: 'Entrar', exact: true }).click();
+  await page.getByRole('link', { name: '+ Nueva receta' }).click();
   await page.getByLabel('Título', { exact: true }).fill(title);
   await page.getByLabel('Categoría', { exact: true }).first().fill('Almuerzo');
   await page.getByLabel('Ingredientes').fill('Arroz, agua y sal');

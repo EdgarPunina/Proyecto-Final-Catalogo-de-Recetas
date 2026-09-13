@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import AuthStory from '../components/AuthStory';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -35,8 +36,11 @@ export default function Login() {
 
   return (
     <div className="auth-page">
+      <AuthStory />
       <div className="auth-card">
+        <p className="eyebrow">BIENVENIDO A TU RECETARIO</p>
         <h1>Iniciar sesión</h1>
+        <p className="auth-intro">Tus próximas ideas en la cocina empiezan aquí.</p>
         <form onSubmit={handleSubmit} className="auth-form">
           <label>
             Email
