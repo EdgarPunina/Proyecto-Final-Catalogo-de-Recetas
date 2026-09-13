@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(DemoRecipeSeeder::class);
         $userA = User::factory()->create([
             'name' => 'Alice',
             'email' => 'alice@example.com',

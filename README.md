@@ -75,6 +75,9 @@ Recipe contiene title, description opcional, ingredients e instructions como tex
 |---|---|---|---|
 | Alice | alice@example.com | password123 | 3 |
 | Bob | bob@example.com | password123 | 2 |
+| Demostración | demo@example.com | Recetas123! | 3 |
+
+Para cargar únicamente la cuenta de demostración en una base existente, sin borrar usuarios ni recetas, ejecuta desde `backend`: `php artisan db:seed --class=DemoRecipeSeeder`. Puede repetirse sin duplicar los datos. Si la cuenta ya existe, conserva su contraseña y las recetas existentes.
 
 RecipeFactory genera recetas caseras con ingredientes e instrucciones reales, sin imágenes remotas ficticias. Son datos de demostración almacenados en la base, no mocks de React.
 
