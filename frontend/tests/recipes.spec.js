@@ -1,0 +1,55 @@
+import { test, expect } from '@playwright/test';
+
+test('registro, CRUD persistente, aislamiento y cierre de sesión con API real', async ({ page, request }) => {
+  const email = `browser-${Date.now()}@example.com`;
+  const title = `Receta navegador ${Date.now()}`;
+  await page.goto('/dashboard');
+  await expect(page).toHaveURL(/\/login$/);
+  await page.getByText('Regístrate').click();
+  await page.getByLabel('Nombre').fill('Prueba navegador');
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Contraseña').fill('password123');
+  await page.getByRole('button', { name: 'Registrarse' }).click();
+  await expect(page.getByRole('heading', { name: 'Mis recetas' })).toBeVisible();
+  await page.getByRole('button', { name: 'Cerrar sesión' }).click();
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Contraseña').fill('password123');
+  await page.getByRole('button', { name: 'Entrar', exact: true }).click();
+  await page.getByLabel('Título', { exact: true }).fill(title);
+  await page.getByLabel('Categoría', { exact: true }).first().fill('Almuerzo');
+  await page.getByLabel('Ingredientes').fill('Arroz, agua y sal');
+  await page.getByLabel('Instrucciones').fill('Cocinar durante 20 minutos.');
+  await page.getByRole('button', { name: 'Crear receta' }).click();
+  await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+  await expect(page.getByLabel('Título', { exact: true })).toHaveValue('');
+  await page.getByRole('button', { name: 'Ver detalle' }).click();
+  await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+  const id = page.url().split('/').pop();
+  const otherLogin = await request.post('http://127.0.0.1:8000/api/login', { data: { email: 'bob@example.com', password: 'password123' } });
+  const { token } = await otherLogin.json();
+  const headers = { Authorization: `Bearer ${token}`, Accept: 'application/json' };
+  for (const method of ['get', 'patch', 'delete']) {
+    const response = await request[method](`http://127.0.0.1:8000/api/recipes/${id}`, { headers, ...(method === 'patch' ? { data: { title: 'Intruso' } } : {}) });
+    expect(response.status()).toBe(404);
+  }
+  const list = await request.get('http://127.0.0.1:8000/api/recipes', { headers });
+  expect((await list.json()).data.some((recipe) => String(recipe.id) === id)).toBe(false);
+  await request.post('http://127.0.0.1:8000/api/logout', { headers });
+  await page.getByRole('button', { name: 'Editar', exact: true }).click();
+  await expect(page.getByLabel('Título', { exact: true })).toHaveValue(title);
+  await page.getByLabel('Título', { exact: true }).fill(`${title} editada`);
+  await page.getByRole('button', { name: 'Guardar cambios' }).click();
+  await expect(page.getByRole('heading', { name: `${title} editada`, exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: `${title} editada`, exact: true })).toBeVisible();
+  page.on('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: 'Eliminar', exact: true }).click();
+  await expect(page.getByText('Receta eliminada correctamente.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: `${title} editada`, exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Cerrar sesión' }).click();
+  await expect(page).toHaveURL(/\/login$/);
+  await page.evaluate(() => localStorage.setItem('recipe_token', 'invalid-token'));
+  await page.goto('/dashboard');
+  await expect(page).toHaveURL(/\/login$/);
+  expect(await page.evaluate(() => localStorage.getItem('recipe_token'))).toBeNull();
+});
