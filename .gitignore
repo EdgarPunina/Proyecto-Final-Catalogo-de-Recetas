@@ -1,0 +1,12 @@
+**/.env
+**/.env.*
+!**/.env.example
+**/vendor/
+**/node_modules/
+**/dist/
+**/*.sqlite*
+**/*.log
+**/auth.json
+**/test-results/
+**/playwright-report/
+**/.npm-cache/
