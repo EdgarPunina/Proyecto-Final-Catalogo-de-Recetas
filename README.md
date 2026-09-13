@@ -112,15 +112,13 @@ PHPUnit usa SQLite en memoria, independiente de la base local. Playwright requie
 
 ## Git y GitHub
 
-Hay un único Git en la raíz. `.env`, vendor, node_modules, logs, SQLite, cachés y resultados de navegador quedan ignorados; los lockfiles y `.env.example` sí se versionan. La rama principal es `main`. Todavía no existe un remoto GitHub configurado.
+Hay un único Git en la raíz. `.env`, vendor, node_modules, logs, SQLite, cachés y resultados de navegador quedan ignorados; los lockfiles y `.env.example` sí se versionan. La rama principal es `main`. El repositorio remoto es [Proyecto-Final-Catalogo-de-Recetas](https://github.com/EdgarPunina/Proyecto-Final-Catalogo-de-Recetas).
 
-Para crear el repositorio único y configurar origin, instala GitHub CLI, autentícate y ejecuta desde la raíz:
+Para clonar el proyecto:
 
 ```powershell
-gh auth login
-gh repo create catalogo-recetas --private --source=. --remote=origin
-git push -u origin main
-git status
+git clone https://github.com/EdgarPunina/Proyecto-Final-Catalogo-de-Recetas.git catalogo-recetas
+cd catalogo-recetas
 ```
 
-El repositorio creado contendrá backend y frontend juntos. No ejecutes `git init` dentro de ninguna de esas carpetas. Para publicar cambios posteriores usa `git push`.
+El repositorio contiene backend y frontend juntos. Sigue las instrucciones de instalación anteriores después de clonar. No ejecutes `git init` dentro de ninguna de esas carpetas. Para publicar commits posteriores desde la raíz usa `git push origin main` y comprueba el estado con `git status`.
